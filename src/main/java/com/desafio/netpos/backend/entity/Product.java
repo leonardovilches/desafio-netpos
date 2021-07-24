@@ -27,10 +27,9 @@ public class Product implements Serializable{
 	@Column(unique = true)
 	private String code;
 	private String name;
+	@Column(length = 1000)
 	private Double price;
-	
-//	@OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "address_id", referencedColumnName = "id")
+
 	private Stock stock;
 	
 

@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.desafio.netpos.backend.entity.UserAccount;
+import com.desafio.netpos.backend.request.CreateUserAccountRequest;
 import com.desafio.netpos.backend.service.UserAccountService;
 import com.desafio.netpos.backend.service.exceptions.ObjectNotFoundException;
 
@@ -27,55 +29,36 @@ public class UserAccountController {
 	@Autowired
 	private UserAccountService userService;
 	
-	@PostMapping
-	public ResponseEntity<Object> insert(@Valid @RequestBody UserAccount user) {
+	@PostMapping(produces = "application/json; charset=UTF-8")
+	public ResponseEntity<Object> insert(@Valid @RequestBody CreateUserAccountRequest request) {
 		log.info(">>>>> UserAccountController >> insert: START");
 		
-		user = userService.insert(user);
-		
-//		URI uri = ServletUriComponentsBuilder
-//				.fromCurrentRequest()
-//				.path("/{id}")
-//				.buildAndExpand(user.getId()).toUri();
-		
+		UserAccount user = userService.insert(request);
+
 		log.info(">>>>> UserAccountController >> insert: FINISH");
+		
 		return ResponseEntity.ok().body(user);
 	}
 	
-	@GetMapping(value="/{id}")
+	@GetMapping(value="/{id}", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<UserAccount> find(@PathVariable String id) throws ObjectNotFoundException {
 		log.info(">>>>> UserAccountController >> find{id}: START");
 		
 		UserAccount obj = userService.find(id);
 		
 		log.info(">>>>> UserAccountController >> find{id}: FINISH");
+		
 		return ResponseEntity.ok().body(obj);
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<UserAccount>> findAll() throws ObjectNotFoundException {
+	@GetMapping(produces = "application/json; charset=UTF-8")
+	public ResponseEntity<List<UserAccount>> findAll(@RequestParam(required = false) String name) throws ObjectNotFoundException {
 		log.info(">>>>> UserAccountController >> findAll: START");
 		
-		List<UserAccount> list = userService.findAll();
-//		List<UserAccountDTO> listDto = list.stream().map(obj -> new UserAccountDTO(obj)).collect(Collectors.toList());
-		
+		List<UserAccount> list = userService.findAll(name);
+
 		log.info(">>>>> UserAccountController >> findAll: FINISH");
 		
 		return ResponseEntity.ok().body(list);
-	}
-	
-//	@DeleteMapping(value = "/{id}")
-//	public ResponseEntity<Void> delete(@PathVariable String id) {
-//		userService.delete(id);
-//		return ResponseEntity.noContent().build();
-//	}
-	
-//	@PutMapping(value = "/account/{id}")
-//	public ResponseEntity<Void> update(@Valid @RequestBody UserAccountDTO objDto, @PathVariable String id) {
-//		UserAccount obj = userService.basicDataFromDTO(objDto);
-//		obj.setId(id);
-//		obj = userService.updateBasicData(obj);
-//		return ResponseEntity.noContent().build();
-//	}
-	
+	}	
 }

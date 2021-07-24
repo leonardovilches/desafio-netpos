@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.desafio.netpos.backend.entity.Product;
@@ -33,7 +34,7 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 	
-	@PostMapping
+	@PostMapping(produces = "application/json; charset=UTF-8")
 	public ResponseEntity<Product> insert(@Valid @RequestBody ProductCreateRequest request, @RequestHeader String userId) {
 		log.info(">>>>> ProductController >> insert: START");
 	
@@ -45,44 +46,57 @@ public class ProductController {
 		return ResponseEntity.ok().body(product);
 	}
 	
-	@PutMapping(value = "/{id}")
+	@PutMapping(value = "/{id}", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<Product> update(@Valid @RequestBody ProductUpdateRequest request, 
 			@PathVariable String id, @RequestHeader String userId) {
+		log.info(">>>>> ProductController >> update: START");
+		
 		Product product = productService.update(request, id);
+		
+		log.info(">>>>> ProductController >> update: FINISH");
 		return ResponseEntity.ok().body(product);
 	}
 	
-	@DeleteMapping(value = "/{id}")
+	@DeleteMapping(value = "/{id}", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<Void> delete(@PathVariable String id, @RequestHeader String userId) {
+		
+		log.info(">>>>> ProductController >> delete: START");
+			
 		productService.delete(id);
+		
+		log.info(">>>>> ProductController >> delete: FINISH");
 		return ResponseEntity.noContent().build();
 	}
 	
-	@GetMapping(value="/{id}")
+	@GetMapping(value="/{id}", produces = "application/json; charset=UTF-8")
 	public ResponseEntity<Product> find(@PathVariable String id, @RequestHeader String userId) {
 		Product obj = productService.find(id);
 		return ResponseEntity.ok().body(obj);
 	}
 	
-	@GetMapping
-	public ResponseEntity<List<Product>> findAll(@RequestHeader String userId) throws ObjectNotFoundException {
+	@GetMapping(produces = "application/json; charset=UTF-8")
+	public ResponseEntity<List<Product>> findAll(@RequestHeader String userId, 
+			@RequestParam(required = false) String filter,
+			@RequestParam(required = false, defaultValue = "code", value = "order") String order,
+			@RequestParam(required = false, defaultValue = "ASC", value = "direction") String direction
+			) throws ObjectNotFoundException {
 		log.info(">>>>> ProductController >> findAll: START");
 		
-		List<Product> list = productService.findAll();
+		List<Product> list = productService.findAll(filter, order, direction);
 		
 		log.info(">>>>> ProductController >> findAll: FINISH");
 		
 		return ResponseEntity.ok().body(list);
 	}
 	
-	@PostMapping(value="/{productId}/stock")
-	public ResponseEntity<ProductStockUpdate> stockUpdate(@RequestBody ProductStockUpdate productStock, 
+	@PostMapping(value="/{productId}/stock", produces = "application/json; charset=UTF-8")
+	public ResponseEntity<ProductStockUpdate> stockUpdate(@Valid @RequestBody ProductStockUpdate productStock, 
 				@PathVariable String productId, @RequestHeader String userId) {
-		log.info(">>>>> ProductController >> insertStock: START");	
+		log.info(">>>>> ProductController >> stockUpdate: START");	
 		
+		productService.updateStock(productStock, productId);
 		
-		
-		log.info(">>>>> ProductController >> insertStock: FINISH");
-		return ResponseEntity.ok().body(productStock);
+		log.info(">>>>> ProductController >> stockUpdate: FINISH");
+		return ResponseEntity.noContent().build();
 	}
 }
