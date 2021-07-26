@@ -3,6 +3,7 @@ package com.desafio.netpos.backend.request;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import com.desafio.netpos.backend.entity.Stock;
 
@@ -20,8 +21,7 @@ public class ProductCreateRequest implements Serializable{
 	private String code;
 	@NotEmpty(message = "Preenchimento obrigatório.")
 	private String name;
-//	@NotEmpty(message = "Preenchimento obrigatório.")
+	@NotNull( message = "Preenchimento obrigatório.")
 	private Double price;
-//	@NotEmpty(message = "Preenchimento obrigatório.")
 	private Stock stock;
 }

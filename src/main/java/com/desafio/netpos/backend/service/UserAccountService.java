@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +26,9 @@ public class UserAccountService {
 	
 	public UserAccount insert(CreateUserAccountRequest request) {
 		UserAccount user = fromRequest(request);
-		user.setId(null);
-		return userRepository.save(user);
+		return userRepository.save(user);	
 	}
-	
+
 	public UserAccount find(String id) throws ObjectNotFoundException {		
 		Optional<UserAccount> user = userRepository.findById(id);
 		
@@ -37,10 +37,11 @@ public class UserAccountService {
 	}
 	
 	public List<UserAccount> findAll(String name) {
+		Sort sort = Sort.by(Sort.Order.asc("fullName"));
 		if(name != null) {
 			return userRepository.findByName(name);			
 		}else {
-			return userRepository.findAll();
+			return userRepository.findAll(sort);
 		}
 	}
 	
@@ -56,6 +57,7 @@ public class UserAccountService {
 
 	public UserAccount fromRequest(CreateUserAccountRequest request) {
 		UserAccount userAccount = new UserAccount();
+		userAccount.setId(null);
 		userAccount.setEmail(request.getEmail());
 		userAccount.setFullName(request.getFullName());
 		userAccount.setPassword(pe.encode(request.getPassword()));

@@ -37,9 +37,8 @@ public class ProductController {
 	@PostMapping(produces = "application/json; charset=UTF-8")
 	public ResponseEntity<Product> insert(@Valid @RequestBody ProductCreateRequest request, @RequestHeader String userId) {
 		log.info(">>>>> ProductController >> insert: START");
-	
-		Product product = productService.fromCreateRequest(request);
-		product = productService.insert(product);
+		
+		Product product = productService.insert(request, userId);
 		
 		log.info(">>>>> ProductController >> insert: FINISH");
 		
@@ -51,7 +50,7 @@ public class ProductController {
 			@PathVariable String id, @RequestHeader String userId) {
 		log.info(">>>>> ProductController >> update: START");
 		
-		Product product = productService.update(request, id);
+		Product product = productService.update(request, id, userId);
 		
 		log.info(">>>>> ProductController >> update: FINISH");
 		return ResponseEntity.ok().body(product);
@@ -62,7 +61,7 @@ public class ProductController {
 		
 		log.info(">>>>> ProductController >> delete: START");
 			
-		productService.delete(id);
+		productService.delete(id, userId);
 		
 		log.info(">>>>> ProductController >> delete: FINISH");
 		return ResponseEntity.noContent().build();
@@ -82,7 +81,7 @@ public class ProductController {
 			) throws ObjectNotFoundException {
 		log.info(">>>>> ProductController >> findAll: START");
 		
-		List<Product> list = productService.findAll(filter, order, direction);
+		List<Product> list = productService.findAll(userId, filter, order, direction);
 		
 		log.info(">>>>> ProductController >> findAll: FINISH");
 		
@@ -94,9 +93,10 @@ public class ProductController {
 				@PathVariable String productId, @RequestHeader String userId) {
 		log.info(">>>>> ProductController >> stockUpdate: START");	
 		
-		productService.updateStock(productStock, productId);
+		productService.updateStock(productStock, productId, userId);
 		
 		log.info(">>>>> ProductController >> stockUpdate: FINISH");
 		return ResponseEntity.noContent().build();
 	}
+
 }
