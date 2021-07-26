@@ -12,6 +12,8 @@ import com.desafio.netpos.backend.entity.UserAccount;
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, String>{
 
-	@Query(value = "select u from UserAccount u where u.fullName like %:name% ")
+	@Query(value = "select u from UserAccount u where u.fullName like %:name% ORDER BY u.fullName")
 	List<UserAccount> findByName(@Param("name") String name);
+	
+	UserAccount findByEmail(@Param("email") String email);
 }
